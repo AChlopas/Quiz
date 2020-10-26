@@ -2,6 +2,14 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QtSql>
+#include <QSql>
+#include <QSqlQuery>
+#include <QSqlQueryModel>
+#include <QSqlDatabase>
+#include <QMessageBox>
+#include <QLibrary>
+#include <QSqlError>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -22,7 +30,9 @@ private slots:
 
     void on_lewywybor_pressed();
 
+
 private:
     Ui::MainWindow *ui;
+    QSqlDatabase db;
 };
 #endif // MAINWINDOW_H
