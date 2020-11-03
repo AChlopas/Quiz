@@ -1,7 +1,10 @@
 QT       += core gui
 QT       += core gui sql
 
+QT +=core sql
 QT += sql
+QT += core
+QT += widgets
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -25,3 +28,9 @@ FORMS += \
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+DISTFILES += \
+    ../baza danych SQL/LineInst.exe.mwb \
+    ../baza danych SQL/tabela.csv \
+    libmysql.dll \
+    libmysqld.dll
