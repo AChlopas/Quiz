@@ -20,20 +20,20 @@
    <widget class="QWidget" name="gridLayoutWidget">
     <property name="geometry">
      <rect>
-      <x>50</x>
-      <y>130</y>
-      <width>240</width>
-      <height>173</height>
+      <x>40</x>
+      <y>110</y>
+      <width>211</width>
+      <height>197</height>
      </rect>
     </property>
     <layout class="QGridLayout" name="gridLayout">
      <item row="1" column="0">
-      <widget class="QLabel" name="rysunekL">
+      <widget class="QLabel" name="rysunekLew">
+       <property name="contextMenuPolicy">
+        <enum>Qt::NoContextMenu</enum>
+       </property>
        <property name="text">
         <string/>
-       </property>
-       <property name="pixmap">
-        <pixmap>../Velociraptor-info-graphic.png</pixmap>
        </property>
       </widget>
      </item>
@@ -50,12 +50,9 @@
     </property>
     <layout class="QGridLayout" name="gridLayout_2">
      <item row="0" column="0">
-      <widget class="QLabel" name="rysunekP">
+      <widget class="QLabel" name="rysunekPraw">
        <property name="text">
         <string/>
-       </property>
-       <property name="pixmap">
-        <pixmap>../Slonce-zolty-karzel.jpg</pixmap>
        </property>
       </widget>
      </item>
@@ -66,7 +63,7 @@
      <rect>
       <x>80</x>
       <y>330</y>
-      <width>131</width>
+      <width>141</width>
       <height>31</height>
      </rect>
     </property>
@@ -77,7 +74,7 @@
         <string notr="true">background-color: rgb(255, 255, 255);</string>
        </property>
        <property name="text">
-        <string>VELI</string>
+        <string>ZAKOŃCZ</string>
        </property>
       </widget>
      </item>
@@ -99,7 +96,7 @@
         <string notr="true">background-color: rgb(255, 255, 255);</string>
        </property>
        <property name="text">
-        <string>SUN</string>
+        <string>GRAJ</string>
        </property>
       </widget>
      </item>
@@ -258,41 +255,6 @@
       </widget>
      </item>
     </layout>
-   </widget>
-   <widget class="QPushButton" name="pushButton_3">
-    <property name="geometry">
-     <rect>
-      <x>610</x>
-      <y>10</y>
-      <width>41</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background-color: rgb(255, 255, 255);</string>
-    </property>
-    <property name="text">
-     <string>X</string>
-    </property>
-   </widget>
-   <widget class="QTimeEdit" name="time">
-    <property name="geometry">
-     <rect>
-      <x>530</x>
-      <y>370</y>
-      <width>118</width>
-      <height>22</height>
-     </rect>
-    </property>
-    <property name="buttonSymbols">
-     <enum>QAbstractSpinBox::NoButtons</enum>
-    </property>
-    <property name="accelerated">
-     <bool>false</bool>
-    </property>
-    <property name="timeSpec">
-     <enum>Qt::LocalTime</enum>
-    </property>
    </widget>
   </widget>
  </widget>

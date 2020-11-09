@@ -1,11 +1,17 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "mytimer.h"
 #include <QDebug>
 #include <QCoreApplication>
 #include <QTime>
 #include <QTimer>
 #include <QtWidgets>
 #include <QDir>
+#include <QFile>
+#include<QProgressBar>
+#include <QTimeEdit>
+#include <QPixmap>
+#include <QElapsedTimer>
 
 
 MainWindow::MainWindow(QWidget *parent)
@@ -14,122 +20,87 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    QDir dir("I:/kav11/SQL/MSSQL14.MSSQLSERVER/MSSQL");
+    QDir dir("I:/SQLiteStudio");
     if (!dir.exists()){
         qWarning("Cannot find the directory");
 }
 
-    /*QSqlDatabase db = QSqlDatabase::addDatabase("QODBC3");{
-    QString servername = "127.0.0.1";
-    QString dbname = "quiz";
-    QString dbpassword = "prog000!";
-    //QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
-    db.setConnectOptions();
-    //QString dsn = QString("DRIVER=(SQL Native Client);SERVER=%1;DATABASE=%2;PASSWORD=%3; Trusted_Connection=YES;").arg(servername).arg(dbname).arg(dbpassword);
-    qDebug() << QSqlDatabase::drivers();*/
-
-    QSqlDatabase db = QSqlDatabase::addDatabase("QODBC3");{
-        QString servername = "C1";
-        QString dbname = "master";
-        QString dbpassword = "prog000!";
-        db.setConnectOptions();
-        QString conn = QString("DRIVER={SQL SERVER};SERVER=%1;DATABASE=%2;PASSWORD=%3").arg(servername).arg(dbname).arg(dbpassword);
-        //QString dsn = QString("DRIVER=(SQL Native Client);SERVER=%1;DATABASE=%2;PASSWORD=%3; Trusted_Connection=YES;").arg(servername).arg(dbname).arg(dbpassword);
-        //qDebug() << QSqlDatabase::drivers();
-        //db.setDatabaseName(dsn);
-
- /*db = QSqlDatabase::addDatabase("QODBC");{
-        db.setHostName("127.0.0.1");
-        db.setDatabaseName("master");
-        db.setUserName("root");
-        db.setPassword ("prog000!");
-    db.setConnectOptions();
-    //QString dsn = QString("DRIVER=(SQL Native Client);SERVER=%1;DATABASE=%2;PASSWORD=%3; Trusted_Connection=YES;").arg(servername).arg(dbname).arg(dbpassword);
-    qDebug() << QSqlDatabase::drivers();*/
+    QString path = "I:/SQLiteStudio/bazaqt";
+    db = QSqlDatabase::addDatabase("QSQLITE");
+    db.setDatabaseName(path+"db");
 
     if (!db.open()){
-        QErrorMessage querr(this);
-        QSqlError err = db.lastError();
-        qDebug() << err.text();
+        qDebug() << "nieee";
   }
-    else{
-        QString ameryka;
-        QString kura;
-        QString jezus;
 
-        QSqlQuery query;
-            query.prepare("INSERT INTO tabela (id_quiz, pytanie, data) VALUES (:id_quiz, :pytanie, :data)");
-            query.bindValue(":id_quiz", 4);
-            query.bindValue(":pytanie", ameryka);
-            query.bindValue(":data", 1492);
-            query.bindValue(":id_quiz", 1);
-            query.bindValue(":pytanie", kura);
-            query.bindValue(":data", -1000);
-            query.bindValue(":id_quiz", 2);
-            query.bindValue(":pytanie", jezus);
+        QSqlQuery query(db);
+       query.prepare("CREATE TABLE IF NOT EXISTS quiz(id  INT PRIMARY KEY, "
+                     "kategoria STRING (40),"
+                     "pytanie   STRING (40),"
+                     "data      INT);");
+        if(!query.exec()) {
+        QErrorMessage qerr(this);
+        QSqlError err = query.lastError();
+        qDebug() << err.text();
+     }
+        else{
+            //query.exec("DELETE FROM quiz");
+            query.prepare("INSERT INTO quiz (id, pytanie, data, kategoria) VALUES(:id, :pytanie, :data, :kategoria);");
+            query.bindValue(":id", 5);
+            query.bindValue(":pytanie", "JEZUS");
             query.bindValue(":data", 0);
-            query.exec("SELECT pytanie, data FROM `quiz`.`tabela` ORDER BY RAND() LIMIT 2;");
-            //query.exec("SELECT id_quiz, pytanie, data FROM tabela");
+            query.bindValue(":kategoria", "5");
+            query.exec();
+            query.bindValue(":id", 4);
+            query.bindValue(":pytanie", "RADYJKO");
+            query.bindValue(":data", 1894);
+            query.bindValue(":kategoria","4");
+            query.exec();
+            query.bindValue(":id", 3);
+            query.bindValue(":pytanie", "ODKRYCIE AMERYKI");
+            query.bindValue(":data", 1492);
+            query.bindValue(":kategoria", "3");
+            query.exec();
+            query.bindValue(":id", 2);
+            query.bindValue(":pytanie", "KURA");
+            query.bindValue(":data", -1000);
+            query.bindValue(":kategoria", "2");
+            query.exec();
+            query.bindValue(":id", 1);
+            query.bindValue(":pytanie", "SLONCE");
+            query.bindValue(":data", -800000);
+            query.bindValue(":kategoria", "1");
+            query.exec();
+            query.bindValue(":id", 6);
+            query.bindValue(":pytanie", "VELOCIRAPTOR");
+            query.bindValue(":data", -700000);
+            query.bindValue(":kategoria", "6");
+            query.exec();
+
             if(!query.exec()) {
             QErrorMessage qerr(this);
             QSqlError err = query.lastError();
             qDebug() << err.text();
          }
-            else {
-                qDebug() << "YAAAAAAAAS";
-            }
-    }
-    }
+       }
 
-   //Deklaracja danych
-    uint idlewy = 0;
-    uint idprawy = 0;
-    QString pytanielewy = "Wylosuj pytanie";
-    QString pytanieprawy = "Losuj!";
-    int datalewy = 0;
-    int dataprawy = 0;
-
-    QSqlQuery query;
-    //Dane do lewego i prawego przycisku:
-    if (query.isSelect())
-    {
-        //pierwszy zestaw danych
-        query.first();
-         idlewy = query.value(0).toInt();
-         pytanielewy = query.value(1).toString();
-         datalewy = query.value(2).toInt();
-
-        //drugi zestaw danych
-        query.last();
-         idprawy = query.value(0).toInt();
-         pytanieprawy = query.value(1).toString();
-         dataprawy = query.value(2).toInt();
-    }
-    else
-    {
-        qDebug() << "no nie da się";
-    }
-
-    //obsługa przycisków:
-    /*obsługa buttona
-    za tekst buttona lewy przypinam zmianną pytanielewy
-    za tekst buttona prawy przypinam zmianną pytanieprawy
-
-    po przyciśnięciu buttonlewy->
-    sprawdzam czy datalewy<dataprawy
-        Tak? +1 punkt
-        Nie? GAMEOVER!
-
-    po przyciśnięciu buttonprawy->
-    sprawdzam czy dataprawy<datalewy
-        Tak? +1 punkt
-        Nie? GAMEOVER!
-
-    //obsługa rysunków: //czyli pobieramy ścieżkę i dynamicznie tylko zmieniamy nazwę rysunku - nazwa rysunku odpowiada ID danego pytania tj. pytanie o ID 1 ma rysunek o nazwie 1 i rozszerzeniu.png
-    QPixmap rysuneklewy("TWOJASCIEZKA[idlewy].png");
-    QPixmap rysunekprawy("TWOJASCIEZKA[idprawy].png");*/
 }
 
+MyTimer::MyTimer()
+{
+    timer = new QTimer(this);
+    timer->setInterval( 30000 );
+    connect(timer, SIGNAL(timeout()), this, SLOT(MySlot()));
+    timer -> start();
+}
+
+void MyTimer::MySlot()
+{
+    qDebug() << "Timer...";
+    QMessageBox msgBox;
+    msgBox.setText("czas się skończył");
+    msgBox.exec();
+}
 
 MainWindow::~MainWindow()
 {
@@ -138,50 +109,96 @@ MainWindow::~MainWindow()
 
 
 void MainWindow::on_prawywybor_clicked()
-{
+{            
+    if (datalewy>dataprawy){
+        n = n+1;
+        ui->points->display(n);
 
-    int datalewy;
-    int dataprawy;
-    int n = 0;
-    QString pytanieprawy;
-
-    if (datalewy<dataprawy){
-        ui->points->display(n+1);
-        ui->lewywybor->setText(pytanieprawy);
-    }
-    else {
-        ui->prawywybor->setEnabled(false);
-        ui->lewywybor->setEnabled(false);
-        qDebug() << "przegrana!";
-    }
-  //setConnection();
   QSqlQuery query;
-   //query.exec("SELECT pytanie, data FROM `quiz`.`tabela` ORDER BY RAND() LIMIT 2;");
-  /* if(query.exec("SELECT pytanie, data FROM tabela ORDER BY RAND() LIMIT 2")) {
-   qDebug() << ("OK!");
+   query.exec("SELECT id, pytanie, data, kategoria FROM quiz ORDER BY RANDOM() LIMIT 2;");
 
    while (query.next())
    {
-   uint id = query.value(0).toInt();
-   QString pytanie = query.value(1).toString();
-   int data = query.value(2).toInt();
-   qDebug() << id << pytanie << data;
-   }
-   }
-   else {
-   QErrorMessage qerr(this);
-   QSqlError err = query.lastError();
-   qDebug() << err.text();
-}*/
-   //qDebug() << "WYGRALES!";
+       QString rysunekL= "lowa";
+               QString rysunekP = "proba";
+              //pierwszy zestaw danych
+              query.first();
+              idlewy = query.value(0).toInt();
+              ui ->lewywybor -> setText(query.value(1).toString());
+              datalewy = query.value(2).toInt();
+              rysunekL = query.value(3).toString();
+              QString sciezkabaza = "C:/Users/ana/Desktop/WEMIF-kursy 2 rok/prog. apli/quizz/grafiki/";
+              QString rozszerzenie = ".jpg";
+              QPixmap sciezkaL = sciezkabaza + rysunekL+rozszerzenie;
+              QPixmap sciezkaP = sciezkabaza + rysunekP+rozszerzenie;
+
+               ui->rysunekLew->setPixmap(sciezkaL);
+               ui->rysunekPraw->setPixmap(sciezkaP);
+
+              //drugi zestaw danych
+               query.last();
+                idprawy = query.value(0).toInt();
+                ui ->prawywybor -> setText(query.value(1).toString());
+                dataprawy = query.value(2).toInt();
+                rysunekP = query.value(3).toString();
+                sciezkaL = sciezkabaza + rysunekL+rozszerzenie;
+                sciezkaP = sciezkabaza + rysunekP+rozszerzenie;
+                ui->rysunekLew->setPixmap(sciezkaL);
+                ui->rysunekPraw->setPixmap(sciezkaP);
+          }
+           }
+           else {
+                ui->prawywybor->setEnabled(false);
+                ui->lewywybor->setEnabled(false);
+                qDebug() << "przegrana!";
+       }
 
     }
 
 void MainWindow::on_lewywybor_pressed()
 {
-   //ui->prawywybor->setEnabled(false);
-   //ui->lewywybor->setEnabled(false);
-   qDebug() << "przegrana!";
-   //int n=0;
-    //ui->points->display(n+1);
+    if (dataprawy>datalewy){
+        n = n+1;
+        ui->points->display(n);
+
+    QSqlQuery query;
+     query.exec("SELECT id, pytanie, data, kategoria FROM quiz ORDER BY RANDOM() LIMIT 2;");
+     while (query.next())
+     {
+             QString rysunekL= "lowa";
+                     QString rysunekP = "proba";
+                    //pierwszy zestaw danych
+                    query.first();
+                     idlewy = query.value(0).toInt();
+                     ui ->lewywybor -> setText(query.value(1).toString());
+                     datalewy = query.value(2).toInt();
+                     rysunekL = query.value(3).toString();
+                     QString sciezkabaza = "C:/Users/ana/Desktop/WEMIF-kursy 2 rok/prog. apli/quizz/grafiki/";
+                     QString rozszerzenie = ".jpg";
+                     QPixmap sciezkaL = sciezkabaza + rysunekL+rozszerzenie;
+                     QPixmap sciezkaP = sciezkabaza + rysunekP+rozszerzenie;
+
+                     ui->rysunekLew->setPixmap(sciezkaL);
+                     ui->rysunekPraw->setPixmap(sciezkaP);
+
+                    //drugi zestaw danych
+                     query.last();
+                      idprawy = query.value(0).toInt();
+                      ui ->prawywybor -> setText(query.value(1).toString());
+                      dataprawy = query.value(2).toInt();
+                      rysunekP = query.value(3).toString();
+                      sciezkaL = sciezkabaza + rysunekL+rozszerzenie;
+                      sciezkaP = sciezkabaza + rysunekP+rozszerzenie;
+                      ui->rysunekLew->setPixmap(sciezkaL);
+                      ui->rysunekPraw->setPixmap(sciezkaP);
+                }
+                 }
+                 else {
+                      ui->prawywybor->setEnabled(false);
+                      ui->lewywybor->setEnabled(false);
+                      qDebug() << "przegrana!";
+             }
+
 }
+
+
