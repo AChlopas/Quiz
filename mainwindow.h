@@ -16,6 +16,15 @@
 #include <QTimer>
 #include <QPixmap>
 #include <QImage>
+#include <QTextEdit>
+#include <QHBoxLayout>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
+#include <QIODevice>
+#include <QTextStream>
+#include <QFile>
+#include <QPlainTextEdit>
+
 
 
 QT_BEGIN_NAMESPACE
@@ -43,13 +52,22 @@ public:
 
     int n = -1;
     int czas = 3000;
-    bool czasminal;
+
+    QPushButton *zapis;
+    QTextEdit *tedit;
+    QHBoxLayout *hbl;
+    QPushButton *loadButton;
+    QPushButton *saveButton;
+    QString *contacts;
+    QString nick;
 
 private slots:
 
     void on_prawywybor_clicked();
 
     void on_lewywybor_pressed();
+
+    void saveToFile();
 
 private:
     Ui::MainWindow *ui;

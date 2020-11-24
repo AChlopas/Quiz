@@ -18,11 +18,11 @@ int main(int argc, char *argv[])
    //QCoreApplication a(argc, argv);
     MyTimer timer;
 
-    QApplication app(argc, argv);
-    //QTimer::singleShot(6000, &app, SLOT(closed()));
-    QTimer::singleShot(33000, &QApplication::quit);
+//    QApplication app(argc, argv);
+//    //QTimer::singleShot(6000, &app, SLOT(closed()));
+//    //QTimer::singleShot(33000, &QApplication::quit);
 
-    return app.exec();
+    return a.exec();
 
 }
 
