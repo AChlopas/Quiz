@@ -1,35 +1,44 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "mytimer.h"
+#include "mythread.h"
 #include <QDebug>
 #include <QCoreApplication>
 #include <QtWidgets>
 #include <QDir>
 #include <QPixmap>
 #include <QDataStream>
-
-void MainWindow::saveToFile(){
-
-    auto central = new QWidget;
-        central->setLayout(hbl);
-
-        setCentralWidget(central);
-
-    QString Nplik = "C:/Users/ana/Desktop/WEMIF-kursy 2 rok/prog. apli/quizz/WYNIKI.txt";
-    QFile plik(Nplik);
-    if(plik.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text))
-          {
+#include <QTcpSocket>
+#include <QSocketDescriptor>
+#include <QSocketNotifier>
 
 
-              QTextStream stream(&plik);
-              nick = tedit->toPlainText();
+//void MainWindow::newClient(int t_id)
+//{
+//    qDebug() << "ServerGame::newClient";
+//    ++m_connectedClients;
 
-              stream << "nick: " << nick << "\n";
-              stream << "wynik: " << n << "\n";
+////    m_serverNetwork->sendOne(t_id, m_parser.idToString(t_id));
+////    m_serverNetwork->sendAll(m_parser.snakesToString(m_snakes));
 
-    }
-    plik.close();
-}
+//    if (t_id == CLIENTS - 1) {
+//        m_allClientsConnected = true;
+//        emit allClientsConnected();
+//    }
+
+//}
+
+//quint16 MainWindow::port() const
+//{
+//    return m_serverNetwork->port();
+//}
+
+//void MainWindow::setId(int t_id)
+//{
+//    qDebug() << "ClientGame::setId" << t_id;
+//    m_id = t_id;
+//}
+
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -37,16 +46,6 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    setWindowTitle ("NICK");
-    zapis = new QPushButton;
-    tedit = new QTextEdit;
-    hbl = new QHBoxLayout;
-    QObject::connect(zapis, SIGNAL(clicked()), this, SLOT(saveToFile()));
-    zapis -> setText("ZAPISZ");
-    hbl->addWidget(tedit);
-    hbl->addWidget(zapis);
-
-    //setLayout(hbl);
 
     QDir dir("I:/SQLiteStudio");
     if (!dir.exists()){
@@ -178,7 +177,7 @@ void MainWindow::on_prawywybor_clicked()
                 ui->prawywybor->setEnabled(false);
                 ui->lewywybor->setEnabled(false);
                 qDebug() << "przegrana!";
-                saveToFile();
+                //saveToFile();
        }
 
     }
@@ -225,62 +224,9 @@ void MainWindow::on_lewywybor_pressed()
                       ui->prawywybor->setEnabled(false);
                       ui->lewywybor->setEnabled(false);
                       qDebug() << "przegrana!";
-                      saveToFile();
+                      //saveToFile();
              }
 }
 
-
-//zapisz::zapisz (QWidget *parent):QDialog(parent){
-//    setWindowTitle ("NICK");
-//    //combo = new QComboBox;
-//    //loadButton= new QPushButton;
-//    //saveButton = new QPushButton;
-//    pushbutton = new QPushButton;
-//    tedit = new QTextEdit;
-//    hbl = new QHBoxLayout;
-//    QObject::connect(pushbutton, SIGNAL(clicked()), this, SLOT(saveToFile()));
-//    //QObject::connect(saveButton, SIGNAL(clicked()), this, SLOT(saveToFile()));
-//    //QObject::connect(loadButton, SIGNAL(clicked()), this, SLOT(loadFromFile()));
-//    pushbutton -> setText("ZAPISZ");
-//    //saveButton -> setText("2 proba");
-
-//    hbl->addWidget(tedit);
-//    hbl->addWidget(pushbutton);
-//    hbl->addWidget(saveButton);
-//    hbl->addWidget(loadButton);
-//    setLayout(hbl);
-
-//}
-
-//void Character::read(const QJsonObject &json)
-//{
-//    if (json.contains("name") && json["name"].isString())
-//        mName = json["name"].toString();
-//}
-
-//void Character::write(QJsonObject &json) const
-//{
-//    json["name"] = mName;
-//}
-
-//bool Game::saveGame(Game::SaveFormat saveFormat) const
-//{
-//    QFile saveFile(saveFormat == Json
-//        ? QStringLiteral("save.json")
-//        : QStringLiteral("save.dat"));
-
-//    if (!saveFile.open(QIODevice::WriteOnly)) {
-//        qWarning("Couldn't open save file.");
-//        return false;
-//    }
-
-//    QJsonObject gameObject;
-//    write(gameObject);
-//    saveFile.write(saveFormat == Json
-//        ? QJsonDocument(gameObject).toJson()
-//        : QCborValue::fromJsonValue(gameObject).toCbor());
-
-//    return true;
-//}
 
 
