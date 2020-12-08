@@ -1,7 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "mytimer.h"
-#include "mythread.h"
 #include <QDebug>
 #include <QCoreApplication>
 #include <QtWidgets>
@@ -13,48 +12,22 @@
 #include <QSocketNotifier>
 
 
-//void MainWindow::newClient(int t_id)
-//{
-//    qDebug() << "ServerGame::newClient";
-//    ++m_connectedClients;
-
-////    m_serverNetwork->sendOne(t_id, m_parser.idToString(t_id));
-////    m_serverNetwork->sendAll(m_parser.snakesToString(m_snakes));
-
-//    if (t_id == CLIENTS - 1) {
-//        m_allClientsConnected = true;
-//        emit allClientsConnected();
-//    }
-
-//}
-
-//quint16 MainWindow::port() const
-//{
-//    return m_serverNetwork->port();
-//}
-
-//void MainWindow::setId(int t_id)
-//{
-//    qDebug() << "ClientGame::setId" << t_id;
-//    m_id = t_id;
-//}
-
-
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
 
+    noweOkno();
 
     QDir dir("I:/SQLiteStudio");
     if (!dir.exists()){
         qWarning("Cannot find the directory");
-}
+    }
 
     QString path = "I:/SQLiteStudio/bazaqt";
     db = QSqlDatabase::addDatabase("QSQLITE");
-    db.setDatabaseName(path+"db");
+    db.setDatabaseName(path+".db");
 
     if (!db.open()){
         qDebug() << "nieee";
@@ -64,7 +37,10 @@ MainWindow::MainWindow(QWidget *parent)
        query.prepare("CREATE TABLE IF NOT EXISTS quiz(id  INT PRIMARY KEY, "
                      "kategoria STRING (40),"
                      "pytanie   STRING (40),"
+                     "login   STRING (10),"
                      "data      INT);");
+
+        bazaU();
         if(!query.exec()) {
         QErrorMessage qerr(this);
         QSqlError err = query.lastError();
@@ -112,6 +88,121 @@ MainWindow::MainWindow(QWidget *parent)
        }
 }
 
+void MainWindow::bazaU(){
+
+    QSqlQuery query(db);
+
+    query.prepare("CREATE TABLE IF NOT EXISTS uczestnicy(pt  INT, "
+                  "imie STRING(40);");
+    query.exec();
+}
+void MainWindow::nowa_odpowiedz(QString imie){
+
+
+}
+
+
+void MainWindow::noweOkno()
+{
+
+    userstr = QString(tr(" "));
+    textEdit = new QTextEdit;
+    textEdit->setReadOnly(true);
+
+    lineEdit = new QLineEdit;
+
+    connectBtn = new QPushButton("connect");
+    connect(connectBtn,SIGNAL(clicked()),this,SLOT(connectTcpServer()));
+    sendBtn = new QPushButton("loguj");
+    connect(sendBtn,SIGNAL(clicked()),this,SLOT(sendMessage()));
+
+    QHBoxLayout *bottomlayout = new QHBoxLayout;
+    bottomlayout->addWidget(connectBtn);
+    bottomlayout->addWidget(sendBtn);
+
+    QVBoxLayout *mainlayout = new QVBoxLayout;
+    mainlayout->addWidget(textEdit);
+    mainlayout->addWidget(lineEdit);
+    mainlayout->addLayout(bottomlayout);
+
+    windos->setLayout(mainlayout);
+    windos->show();
+
+}
+
+void MainWindow::connectTcpServer()
+{
+
+m_tcpsocket = new QTcpSocket(this);
+m_tcpsocket->abort();
+m_tcpsocket->connectToHost(QHostAddress::LocalHost,16666);
+
+connect(m_tcpsocket,SIGNAL(connected()),this,SLOT(connectedServer()));
+//connect(m_tcpsocket,SIGNAL(readyRead()),this,SLOT(readMessage()));
+
+ textEdit->append(tr("connect server...")+'\n');
+connectBtn->setEnabled(false);
+}
+
+void MainWindow::connectedServer()
+{
+ textEdit->append(tr("Connection server succeeded!")+'\n');
+}
+
+//void MainWindow::readMessage()
+//{
+//QString string;
+//QByteArray block = m_tcpsocket->readAll();
+//QDataStream in(block);
+//in.setVersion(QDataStream::Qt_5_15);
+//in>>string;
+// textEdit->append(tr("User has a message coming\n message is:")+string+'\n');
+//}
+
+void MainWindow::sendMessage()
+{
+
+    //QString id=userstr.left(2);
+    id = n;
+    QString userstr;
+
+    int type;
+    type = 1;
+    QString string = lineEdit->text();
+    QByteArray block;
+    QDataStream out(&block,QIODevice::WriteOnly);
+    out.setVersion(QDataStream::Qt_5_15);
+    out<<userstr;
+    out<<type;
+    out<<string;
+    out<<id;
+    m_tcpsocket->write(block);
+    lineEdit->clear();
+
+
+    QSqlQuery query;
+    query.prepare("INSERT INTO uczestnicy (pt, imie) VALUES(:pt, :imie);");
+    query.bindValue(":pt", id);
+    query.exec();
+    query.bindValue(":imie", userstr);
+    query.exec();
+    if(!query.exec()) {
+    QErrorMessage qerr(this);
+    QSqlError err = query.lastError();
+    qDebug() << err.text();
+    }
+
+query.exec("SELECT * FROM uczestnicy LIMIT 1;");
+
+while (query.next()){
+    id = query.value(0).toInt() ;
+    userstr = query.value(1).toString();
+}
+
+
+}
+
+
 MyTimer::MyTimer()
 {
     timer = new QTimer(this);
@@ -139,6 +230,7 @@ void MainWindow::on_prawywybor_clicked()
     if (datalewy>dataprawy){
         n = n+1;
         ui->points->display(n);
+
 
   QSqlQuery query;
    query.exec("SELECT id, pytanie, data, kategoria FROM quiz ORDER BY RANDOM() LIMIT 2;");
@@ -174,10 +266,14 @@ void MainWindow::on_prawywybor_clicked()
           }
            }
            else {
+                QSqlQuery query;
+                query.prepare("INSERT INTO uczestnicy (wynik) VALUES(:n);");
+                query.bindValue(":n",n);
+                query.exec();
                 ui->prawywybor->setEnabled(false);
                 ui->lewywybor->setEnabled(false);
                 qDebug() << "przegrana!";
-                //saveToFile();
+
        }
 
     }
@@ -221,12 +317,13 @@ void MainWindow::on_lewywybor_pressed()
                 }
                  }
                  else {
+                        QSqlQuery query;
                       ui->prawywybor->setEnabled(false);
                       ui->lewywybor->setEnabled(false);
+                      query.prepare("INSERT INTO uczestnicy (wynik) VALUES(:n);");
+                      query.bindValue(":n", n);
+                      query.exec();
                       qDebug() << "przegrana!";
-                      //saveToFile();
+
              }
 }
-
-
-

@@ -42,21 +42,16 @@ class MainWindow : public QMainWindow
 
 public:
 
-    //nowe
-    MainWindow(quint16 t_port);
-    quint16 port() const;
+    QTextEdit *layoutnick;
+    QByteArray nick;
 
-
-    const quint16 CLIENTS = 2;
-
-    QString idToString(int t_id) const;
-        int idFromString(const QString &t_message) const;
+    QTcpSocket *_pSocket;
 
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
     QTimer *timer;
-
+    void nowa_odpowiedz(QString odp);
     QSqlDatabase db;
     void do_stuff();
     int idlewy;
@@ -69,55 +64,42 @@ public:
     int n = -1;
     int czas = 3000;
 
-//    QPushButton *zapis;
-//    QTextEdit *tedit;
-//    QHBoxLayout *hbl;
-//    QPushButton *loadButton;
-//    QPushButton *saveButton;
-//    QString *contacts;
-    //QString nick;
+    QTextEdit *textEdit;
+    QLineEdit *lineEdit;
+    QPushButton *sendBtn;
+    QPushButton *connectBtn;
+    QTcpSocket *m_tcpsocket;
+    QString userstr;
 
-
-    //~logowanie();
-    QTextEdit *layoutnick;
-    QByteArray nick;
-    //QTextEdit *layoutnick;
-    QTcpSocket *_pSocket;
-
-
-    bool state=false;
-        QString IP,Port,Message;
-        QString time;
-        int ClientNumber;
+    QWidget *windos = new QWidget;
+    void noweOkno();
+    void bazaU();
+    int  id;
 
 //nowe
-public slots:
-    void newClient(int t_id);
-    void process(const QString &t_message) const;
-    void setId(int t_id);
+//public slots:
+//   void noweOkno();
 
 private slots:
-    void on_pushButton_create_clicked();
 
-    void on_checkBox_stateChanged(int arg1);
+        void connectTcpServer();
+        void connectedServer();
+       // void readMessage();
+        void sendMessage();
 
     void on_prawywybor_clicked();
 
     void on_lewywybor_pressed();
 
-    //void nickLayout();
-
 //nowe
 signals:
-    void passClientNum(QString IP,QString Port,int ClientNum,QString Message,bool state,QString time);
-    void allClientsConnected();
-    void allClientsNotConnected();
+
     void connectionError(const QString &t_message) const;
     void connected() const;
 
 
-private:
-        //ClientUI *clientui;
+private:   
+
     Ui::MainWindow *ui;
     quint16 m_connectedClients = 0;
     bool m_allClientsConnected = false;
