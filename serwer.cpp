@@ -2,32 +2,91 @@
 #include "ui_serwer.h"
 #include <QHBoxLayout>
 #include <QVBoxLayout>
-#include "mainwindow.h"
-serwer::serwer(QWidget *parent, MainWindow *mainwindow)
+#include <QErrorMessage>
+#include <QSqlError>
+//#include "mainwindow.h"
+serwer::serwer(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::serwer)
 {
-    ui->setupUi(this);
-    this->mainwindow=mainwindow;
+
+    QDir dir("I:/SQLiteStudio");
+    if (!dir.exists()){
+        qWarning("Cannot find the directory");
+    }
+
+    QString path = "I:/SQLiteStudio/bazaqt";
+    db = QSqlDatabase::addDatabase("QSQLITE");
+    db.setDatabaseName(path+".db");
+
+    if (!db.open()){
+        qDebug() << "nieee";
+  }
+
+            QSqlQuery query(db);
+           query.prepare("CREATE TABLE IF NOT EXISTS quiz(id  INT PRIMARY KEY, "
+                         "kategoria STRING (40),"
+                         "pytanie   STRING (40),"
+                         "login   STRING (10),"
+                         "data      INT);");
+
+            bazaU();
+            if(!query.exec()) {
+            QErrorMessage qerr(this);
+            QSqlError err = query.lastError();
+            qDebug() << err.text();
+         }
+            else{
+                //query.exec("DELETE FROM quiz");
+                query.prepare("INSERT INTO quiz (id, pytanie, data, kategoria) VALUES(:id, :pytanie, :data, :kategoria);");
+                query.bindValue(":id", 5);
+                query.bindValue(":pytanie", "JEZUS");
+                query.bindValue(":data", 0);
+                query.bindValue(":kategoria", "5");
+                query.exec();
+                query.bindValue(":id", 4);
+                query.bindValue(":pytanie", "RADYJKO");
+                query.bindValue(":data", 1894);
+                query.bindValue(":kategoria","4");
+                query.exec();
+                query.bindValue(":id", 3);
+                query.bindValue(":pytanie", "ODKRYCIE AMERYKI");
+                query.bindValue(":data", 1492);
+                query.bindValue(":kategoria", "3");
+                query.exec();
+                query.bindValue(":id", 2);
+                query.bindValue(":pytanie", "KURA");
+                query.bindValue(":data", -1000);
+                query.bindValue(":kategoria", "2");
+                query.exec();
+                query.bindValue(":id", 1);
+                query.bindValue(":pytanie", "SLONCE");
+                query.bindValue(":data", -800000);
+                query.bindValue(":kategoria", "1");
+                query.exec();
+                query.bindValue(":id", 6);
+                query.bindValue(":pytanie", "VELOCIRAPTOR");
+                query.bindValue(":data", -700000);
+                query.bindValue(":kategoria", "6");
+                query.exec();
+
+                if(!query.exec()) {
+                QErrorMessage qerr(this);
+                QSqlError err = query.lastError();
+                qDebug() << err.text();
+             }
+           }
+
     textEdit = new QTextEdit;
     textEdit->setReadOnly(true);
-
-    //lineEdit = new QLineEdit;
 
     startBtn = new QPushButton("start");
     connect(startBtn,SIGNAL(clicked()),this,SLOT(startTcpServer()));
 
-    //sendBtn = new QPushButton("sendToLogin");
-    //connect(sendBtn,SIGNAL(clicked()),this,SLOT(sendMessage()));
     QHBoxLayout *bottomlayout = new QHBoxLayout;
     bottomlayout->addWidget(startBtn);
     setLayout(bottomlayout);
     bottomlayout->addWidget(textEdit);
-
-//    QVBoxLayout *mainlayout = new QVBoxLayout;
-//    mainlayout->addWidget(textEdit);
-//    mainlayout->addWidget(lineEdit);
-//    mainlayout->addLayout(bottomlayout);
     }
 
     void serwer::startTcpServer()
@@ -47,8 +106,8 @@ serwer::serwer(QWidget *parent, MainWindow *mainwindow)
     void serwer::readMessage()
     {
     QString userstr;
-    //QString id=userstr.left(2);
-    int id;
+    int pt;
+    QString strpt;
     int type;
     QString string;
     QByteArray block = m_tcpsocket->readAll();
@@ -58,21 +117,25 @@ serwer::serwer(QWidget *parent, MainWindow *mainwindow)
     in>>userstr;
     in>>type;
     in>>string;
-    in>>id;
-    textEdit->append( userstr + tr(" gain number of points: ")+ id +'\n');
-    //textEdit->setText(userstr + " uzyskales tyle punktow: " + id);
+    in>>pt;
+
+    strpt = QString::number(pt);
+
+
+    textEdit->append( string + tr(" gain number of points: ")+ strpt +'\n');
+    //textEdit->setText(string + " gain number of points: " + id + '\n');
 
     }
 
-//    void serwer::sendMessage()
-//    {
-//    QString string = lineEdit->text();
-//    QByteArray block;
-//    QDataStream out(&block,QIODevice::WriteOnly);
-//    out.setVersion(QDataStream::Qt_5_15);
-//    out<<string;
-//    m_tcpsocket->write(block);
-//    }
+    void serwer::bazaU(){
+
+         QSqlQuery query(db);
+
+         query.prepare("CREATE TABLE IF NOT EXISTS uczestnicy(pt  INT, "
+                       "imie STRING(40);");
+         query.exec();
+     }
+
 
 serwer::~serwer()
 {

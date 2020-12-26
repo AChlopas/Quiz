@@ -10,7 +10,10 @@
 #include <QPushButton>
 #include <QTcpSocket>
 #include "qtcpsocket.h"
-#include "mainwindow.h"
+#include <QSqlQuery>
+#include <QSqlQueryModel>
+#include <QSqlDatabase>
+//#include "mainwindow.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class serwer; }
@@ -22,11 +25,11 @@ class serwer : public QWidget
 
 public:
     serwer(QWidget *parent = nullptr);
-    serwer(QWidget *parent = nullptr, MainWindow *mainwindow=nullptr);
     ~serwer();
         int run();
+        void bazaU();
 
-    MainWindow *mainwindow;
+    QSqlDatabase db;
     QTextEdit *textEdit;
     QLineEdit *lineEdit;
     QPushButton *sendBtn;
@@ -36,7 +39,6 @@ public:
 
 private slots:
     void startTcpServer();
-   // void sendMessage();
     void newConnect();
     void readMessage();
 

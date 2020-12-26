@@ -20,11 +20,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     noweOkno();
 
-    QDir dir("I:/SQLiteStudio");
-    if (!dir.exists()){
-        qWarning("Cannot find the directory");
-    }
-
     QString path = "I:/SQLiteStudio/bazaqt";
     db = QSqlDatabase::addDatabase("QSQLITE");
     db.setDatabaseName(path+".db");
@@ -33,74 +28,7 @@ MainWindow::MainWindow(QWidget *parent)
         qDebug() << "nieee";
   }
 
-        QSqlQuery query(db);
-       query.prepare("CREATE TABLE IF NOT EXISTS quiz(id  INT PRIMARY KEY, "
-                     "kategoria STRING (40),"
-                     "pytanie   STRING (40),"
-                     "login   STRING (10),"
-                     "data      INT);");
-
-        bazaU();
-        if(!query.exec()) {
-        QErrorMessage qerr(this);
-        QSqlError err = query.lastError();
-        qDebug() << err.text();
-     }
-        else{
-            //query.exec("DELETE FROM quiz");
-            query.prepare("INSERT INTO quiz (id, pytanie, data, kategoria) VALUES(:id, :pytanie, :data, :kategoria);");
-            query.bindValue(":id", 5);
-            query.bindValue(":pytanie", "JEZUS");
-            query.bindValue(":data", 0);
-            query.bindValue(":kategoria", "5");
-            query.exec();
-            query.bindValue(":id", 4);
-            query.bindValue(":pytanie", "RADYJKO");
-            query.bindValue(":data", 1894);
-            query.bindValue(":kategoria","4");
-            query.exec();
-            query.bindValue(":id", 3);
-            query.bindValue(":pytanie", "ODKRYCIE AMERYKI");
-            query.bindValue(":data", 1492);
-            query.bindValue(":kategoria", "3");
-            query.exec();
-            query.bindValue(":id", 2);
-            query.bindValue(":pytanie", "KURA");
-            query.bindValue(":data", -1000);
-            query.bindValue(":kategoria", "2");
-            query.exec();
-            query.bindValue(":id", 1);
-            query.bindValue(":pytanie", "SLONCE");
-            query.bindValue(":data", -800000);
-            query.bindValue(":kategoria", "1");
-            query.exec();
-            query.bindValue(":id", 6);
-            query.bindValue(":pytanie", "VELOCIRAPTOR");
-            query.bindValue(":data", -700000);
-            query.bindValue(":kategoria", "6");
-            query.exec();
-
-            if(!query.exec()) {
-            QErrorMessage qerr(this);
-            QSqlError err = query.lastError();
-            qDebug() << err.text();
-         }
-       }
 }
-
-void MainWindow::bazaU(){
-
-    QSqlQuery query(db);
-
-    query.prepare("CREATE TABLE IF NOT EXISTS uczestnicy(pt  INT, "
-                  "imie STRING(40);");
-    query.exec();
-}
-void MainWindow::nowa_odpowiedz(QString imie){
-
-
-}
-
 
 void MainWindow::noweOkno()
 {
@@ -149,22 +77,10 @@ void MainWindow::connectedServer()
  textEdit->append(tr("Connection server succeeded!")+'\n');
 }
 
-//void MainWindow::readMessage()
-//{
-//QString string;
-//QByteArray block = m_tcpsocket->readAll();
-//QDataStream in(block);
-//in.setVersion(QDataStream::Qt_5_15);
-//in>>string;
-// textEdit->append(tr("User has a message coming\n message is:")+string+'\n');
-//}
 
 void MainWindow::sendMessage()
 {
-
-    //QString id=userstr.left(2);
-    id = n;
-    QString userstr;
+    pt = n;
 
     int type;
     type = 1;
@@ -175,30 +91,23 @@ void MainWindow::sendMessage()
     out<<userstr;
     out<<type;
     out<<string;
-    out<<id;
+    out<<pt;
     m_tcpsocket->write(block);
     lineEdit->clear();
 
 
-    QSqlQuery query;
-    query.prepare("INSERT INTO uczestnicy (pt, imie) VALUES(:pt, :imie);");
-    query.bindValue(":pt", id);
+    QSqlQuery query(db);
+    query.prepare("INSERT INTO uczestnicy (pt, imie) VALUES(?, ?);");
+    query.addBindValue(pt);
+    query.addBindValue(string);
     query.exec();
-    query.bindValue(":imie", userstr);
-    query.exec();
-    if(!query.exec()) {
-    QErrorMessage qerr(this);
-    QSqlError err = query.lastError();
-    qDebug() << err.text();
-    }
 
-query.exec("SELECT * FROM uczestnicy LIMIT 1;");
+query.exec("SELECT * FROM uczestnicy;");
 
 while (query.next()){
-    id = query.value(0).toInt() ;
-    userstr = query.value(1).toString();
+    pt = query.value(n).toInt();
+    string = query.value(userstr).toString();
 }
-
 
 }
 

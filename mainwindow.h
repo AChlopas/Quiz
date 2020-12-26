@@ -51,9 +51,7 @@ public:
     ~MainWindow();
 
     QTimer *timer;
-    void nowa_odpowiedz(QString odp);
     QSqlDatabase db;
-    void do_stuff();
     int idlewy;
     int idprawy;
     QString pytanielewy = "Wylosuj";
@@ -73,25 +71,19 @@ public:
 
     QWidget *windos = new QWidget;
     void noweOkno();
-    void bazaU();
-    int  id;
+    int  pt;
 
-//nowe
-//public slots:
-//   void noweOkno();
 
 private slots:
 
         void connectTcpServer();
         void connectedServer();
-       // void readMessage();
         void sendMessage();
 
     void on_prawywybor_clicked();
 
     void on_lewywybor_pressed();
 
-//nowe
 signals:
 
     void connectionError(const QString &t_message) const;

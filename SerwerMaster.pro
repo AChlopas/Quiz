@@ -1,16 +1,10 @@
 QT       += core gui
-QT += core
+QT      +=network
+QT += widgets
 QT       += core gui sql
 
 QT +=core sql
 QT += sql
-QT += core
-QT += widgets
-QT += network
-QT       += core gui serialport
-
-TARGET = qtsqltest
-TEMPLATE = app
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -22,32 +16,15 @@ CONFIG += c++11
 
 SOURCES += \
     main.cpp \
-    mainwindow.cpp
+    serwer.cpp
 
 HEADERS += \
-    mainwindow.h \
-    mytimer.h
+    serwer.h
 
 FORMS += \
-    mainwindow.ui
+    serwer.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
-
-DISTFILES += \
-    ../baza danych SQL/LineInst.exe.mwb \
-    ../baza danych SQL/tabela.csv \
-    grafiki/1.jpg \
-    grafiki/2.jpg \
-    grafiki/3.jpg \
-    grafiki/4.jpg \
-    grafiki/5.jpg \
-    grafiki/6.jpg \
-    libmysql.dll \
-    libmysqld.dll \
-    serwer.pro.user
-
-SUBDIRS += \
-    serwer.pro
