@@ -29,7 +29,8 @@
 #include <QPlainTextEdit>
 #include <QTcpSocket>
 #include <QtNetwork>
-
+#include <QtCore>
+#include <QDebug>
 
 
 QT_BEGIN_NAMESPACE
@@ -42,6 +43,10 @@ class MainWindow : public QMainWindow
 
 public:
 
+
+    QTimer *timer;
+    QMessageBox msgBox;
+
     QTextEdit *layoutnick;
     QByteArray nick;
 
@@ -50,7 +55,6 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-    QTimer *timer;
     QSqlDatabase db;
     int idlewy;
     int idprawy;
@@ -71,6 +75,7 @@ public:
 
     QWidget *windos = new QWidget;
     void noweOkno();
+    void timerOkno();
     int  pt;
 
 
@@ -89,15 +94,13 @@ signals:
     void connectionError(const QString &t_message) const;
     void connected() const;
 
+public slots:
+    void MySlot();
+
 
 private:   
-
     Ui::MainWindow *ui;
-    quint16 m_connectedClients = 0;
-    bool m_allClientsConnected = false;
-    MainWindow *m_serverNetwork;
-    MainWindow *m_clientNetwork;
-    int m_id = -1;
+
 };
 
 #endif // MAINWINDOW_H

@@ -1,6 +1,5 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "mytimer.h"
 #include <QDebug>
 #include <QCoreApplication>
 #include <QtWidgets>
@@ -19,6 +18,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     noweOkno();
+    timerOkno();
 
     QString path = "I:/SQLiteStudio/bazaqt";
     db = QSqlDatabase::addDatabase("QSQLITE");
@@ -28,6 +28,14 @@ MainWindow::MainWindow(QWidget *parent)
         qDebug() << "nieee";
   }
 
+}
+
+void MainWindow::timerOkno()
+{
+        timer = new QTimer(this);
+        timer->setInterval(30000);
+        connect(timer, SIGNAL(timeout()), this, SLOT(MySlot()));
+        timer -> start();
 }
 
 void MainWindow::noweOkno()
@@ -68,7 +76,7 @@ m_tcpsocket->connectToHost(QHostAddress::LocalHost,16666);
 connect(m_tcpsocket,SIGNAL(connected()),this,SLOT(connectedServer()));
 //connect(m_tcpsocket,SIGNAL(readyRead()),this,SLOT(readMessage()));
 
- textEdit->append(tr("connect server...")+'\n');
+textEdit->append(tr("connect server...")+'\n');
 connectBtn->setEnabled(false);
 }
 
@@ -82,14 +90,11 @@ void MainWindow::sendMessage()
 {
     pt = n;
 
-    int type;
-    type = 1;
     QString string = lineEdit->text();
     QByteArray block;
     QDataStream out(&block,QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_5_15);
     out<<userstr;
-    out<<type;
     out<<string;
     out<<pt;
     m_tcpsocket->write(block);
@@ -112,21 +117,24 @@ while (query.next()){
 }
 
 
-MyTimer::MyTimer()
-{
-    timer = new QTimer(this);
-    timer->setInterval(30000);
-    connect(timer, SIGNAL(timeout()), this, SLOT(MySlot()));
-    timer -> start();
-}
+//MyTimer::MyTimer()
+//{
+//    timer = new QTimer(this);
+//    timer->setInterval(30000);
+//    connect(timer, SIGNAL(timeout()), this, SLOT(MySlot()));
+//    timer -> start();
+//}
 
-void MyTimer::MySlot()
+void MainWindow::MySlot()
 {
     qDebug() << "Timer...";
-    QMessageBox msgBox;
     msgBox.setText("czas się skończył");
-    msgBox.exec();
+    if (msgBox.exec()){
+        ui->prawywybor->setEnabled(false);
+        ui->lewywybor->setEnabled(false);
+    }
 }
+
 
 MainWindow::~MainWindow()
 {

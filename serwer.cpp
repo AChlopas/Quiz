@@ -108,22 +108,18 @@ serwer::serwer(QWidget *parent)
     QString userstr;
     int pt;
     QString strpt;
-    int type;
     QString string;
     QByteArray block = m_tcpsocket->readAll();
     QDataStream in(block);
 
     in.setVersion(QDataStream::Qt_5_15);
     in>>userstr;
-    in>>type;
     in>>string;
     in>>pt;
 
     strpt = QString::number(pt);
 
-
     textEdit->append( string + tr(" gain number of points: ")+ strpt +'\n');
-    //textEdit->setText(string + " gain number of points: " + id + '\n');
 
     }
 
