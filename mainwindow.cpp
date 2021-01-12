@@ -117,14 +117,6 @@ while (query.next()){
 }
 
 
-//MyTimer::MyTimer()
-//{
-//    timer = new QTimer(this);
-//    timer->setInterval(30000);
-//    connect(timer, SIGNAL(timeout()), this, SLOT(MySlot()));
-//    timer -> start();
-//}
-
 void MainWindow::MySlot()
 {
     qDebug() << "Timer...";
@@ -156,6 +148,7 @@ void MainWindow::on_prawywybor_clicked()
    {
        QString rysunekL= "lowa";
                QString rysunekP = "proba";
+
               //pierwszy zestaw danych
               query.first();
               idlewy = query.value(0).toInt();
@@ -207,6 +200,7 @@ void MainWindow::on_lewywybor_pressed()
      {
              QString rysunekL= "lowa";
                      QString rysunekP = "proba";
+
                     //pierwszy zestaw danych
                     query.first();
                      idlewy = query.value(0).toInt();
